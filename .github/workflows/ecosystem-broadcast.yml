@@ -81,7 +81,7 @@ jobs:
           elif [ "${{ github.event_name }}" == "release" ]; then
             echo "message_title=Release Announcement: ${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
             echo "message_body=New release ${{ github.event.release.tag_name }} has been ${{ github.event.action }}. ${{ github.event.release.body }}" >> $GITHUB_OUTPUT
-            echo "distribution_type=milestone" >> $GITHUB_OUTPUT
+            echo "distribution_type=announcement" >> $GITHUB_OUTPUT
             echo "should_create_issue=true" >> $GITHUB_OUTPUT
           else
             # Workflow dispatch - use input parameters
@@ -101,8 +101,17 @@ jobs:
           
           echo "repositories=$REPOS" >> $GITHUB_OUTPUT
           
-          # Convert comma-separated list to JSON array for matrix strategy
-          REPOS_JSON=$(echo "$REPOS" | jq -R -s -c 'split(",") | map(gsub("^\\s+|\\s+$"; ""))')
+          # Convert comma-separated list to JSON array for matrix strategy (pure bash)
+          IFS=',' read -ra REPO_ARRAY <<< "$REPOS"
+          REPOS_JSON="["
+          for i in "${!REPO_ARRAY[@]}"; do
+            REPO=$(echo "${REPO_ARRAY[$i]}" | xargs)  # Trim whitespace
+            if [ $i -gt 0 ]; then
+              REPOS_JSON+=","
+            fi
+            REPOS_JSON+="\"$REPO\""
+          done
+          REPOS_JSON+="]"
           echo "repositories_json=$REPOS_JSON" >> $GITHUB_OUTPUT
           
           echo "✅ Broadcast configuration prepared"
@@ -238,9 +247,14 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## 🎯 Target Repositories" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "${{ needs.prepare-broadcast.outputs.repositories }}" | tr ',' '\n' | while read repo; do
+          
+          # Convert comma-separated list to individual lines
+          IFS=',' read -ra REPOS <<< "${{ needs.prepare-broadcast.outputs.repositories }}"
+          for repo in "${REPOS[@]}"; do
+            repo=$(echo "$repo" | xargs)  # Trim whitespace
             echo "- \`heyns1000/$repo\`" >> $GITHUB_STEP_SUMMARY
           done
+          
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## 📊 Distribution Status" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
