@@ -48,6 +48,8 @@ jobs:
   prepare-broadcast:
     name: Prepare Broadcast Configuration
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       repositories: ${{ steps.configure.outputs.repositories }}
       repositories_json: ${{ steps.configure.outputs.repositories_json }}
@@ -130,6 +132,9 @@ jobs:
     name: Distribute to ${{ matrix.repo }}
     needs: prepare-broadcast
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
     strategy:
       matrix:
         repo: ${{ fromJson(needs.prepare-broadcast.outputs.repositories_json) }}
@@ -234,6 +239,8 @@ jobs:
     name: Generate Broadcast Summary
     needs: [prepare-broadcast, distribute-to-ecosystem]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     if: always()
     
     steps:
