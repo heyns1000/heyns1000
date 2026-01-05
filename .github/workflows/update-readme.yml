@@ -4,10 +4,10 @@ on:
   # Run automatically once a day
   schedule:
     - cron: "0 0 * * *"
-  
+
   # Allow manual trigger
   workflow_dispatch:
-  
+
   # Run on push to main
   push:
     branches:
@@ -18,11 +18,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      
+
       - name: Update README with latest stats
         run: |
           echo "README update placeholder - can be extended with dynamic content updates"
@@ -31,7 +31,7 @@ jobs:
           # - Update contribution statistics
           # - Update project lists
           # - Any other dynamic content in README.md
-      
+
       - name: Commit changes if any
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
