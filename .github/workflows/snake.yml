@@ -1,0 +1,52 @@
+name: Generate Contribution Snake
+
+on:
+  # Run automatically every 12 hours
+  schedule:
+    - cron: "0 */12 * * *"
+
+  # Allow manual trigger
+  workflow_dispatch:
+
+  # Run on push to main
+  push:
+    branches:
+      - main
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Generate snake animation
+        uses: Platane/snk/svg-only@v3
+        with:
+          github_user_name: heyns1000
+          outputs: |
+            dist/github-contribution-grid-snake.svg
+            dist/github-contribution-grid-snake-dark.svg?palette=github-dark
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create output directory if it doesn't exist
+        run: mkdir -p output
+
+      - name: Move generated files to output directory
+        run: |
+          mv dist/github-contribution-grid-snake.svg output/
+          mv dist/github-contribution-grid-snake-dark.svg output/
+
+      - name: Push snake animations to output branch
+        uses: crazy-max/ghaction-github-pages@v3
+        with:
+          target_branch: output
+          build_dir: output
+          keep_history: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
