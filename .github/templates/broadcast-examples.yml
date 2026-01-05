@@ -1,0 +1,117 @@
+# Example Workflow Dispatch Inputs
+# This file shows example inputs for manually triggering the ecosystem broadcast workflow
+# Use these as templates when running the workflow via GitHub Actions UI
+
+# Example 1: Simple Announcement
+example_announcement:
+  message_title: "Welcome New Contributors!"
+  message_body: |
+    We're excited to welcome new contributors to the heyns1000 ecosystem!
+    
+    Check out our contributing guidelines and join our community.
+  distribution_type: "announcement"
+  target_repositories: ""  # Empty = all repositories
+  create_issue: true
+  file_to_distribute: ""
+
+# Example 2: Milestone Achievement
+example_milestone:
+  message_title: "Milestone: 100 Stars Reached!"
+  message_body: |
+    🎉 We've reached 100 stars across our ecosystem repositories!
+    
+    Thank you to all our contributors and supporters.
+    
+    ## What's Next
+    - Expand documentation
+    - Add more integrations
+    - Improve performance
+  distribution_type: "milestone"
+  target_repositories: ""
+  create_issue: true
+  file_to_distribute: ""
+
+# Example 3: Security Alert (Targeted)
+example_security_alert:
+  message_title: "URGENT: Security Patch Required"
+  message_body: |
+    ⚠️ A critical security vulnerability has been identified.
+    
+    ## Action Required (within 24 hours)
+    - Update dependency package-x to version 2.1.5+
+    - Run security audit: `npm audit fix`
+    - Verify no breaking changes
+    - Deploy immediately
+    
+    ## References
+    - CVE: CVE-2026-12345
+    - Advisory: https://github.com/advisories/GHSA-xxxx-xxxx-xxxx
+  distribution_type: "security_alert"
+  target_repositories: "codenest,omnigrid"  # Only specific repos
+  create_issue: true
+  file_to_distribute: ""
+
+# Example 4: Documentation Update with File
+example_docs_update:
+  message_title: "Updated Code of Conduct"
+  message_body: |
+    We've updated our Code of Conduct to better reflect our community values.
+    
+    ## Key Changes
+    - Enhanced inclusivity guidelines
+    - Clearer reporting procedures
+    - Updated contact information
+    
+    Please review and update your local repositories.
+  distribution_type: "documentation_update"
+  target_repositories: ""
+  create_issue: true
+  file_to_distribute: ".github/CODE_OF_CONDUCT.md"  # Example file path
+
+# Example 5: Test Broadcast (Single Repository)
+example_test:
+  message_title: "Test Broadcast - Please Ignore"
+  message_body: |
+    This is a test of the ecosystem broadcast system.
+    
+    No action required. This issue can be closed immediately.
+  distribution_type: "announcement"
+  target_repositories: "codenest"  # Test with one repo first
+  create_issue: true
+  file_to_distribute: ""
+
+# Example 6: Quarterly Update
+example_quarterly_update:
+  message_title: "Q1 2026 Ecosystem Update"
+  message_body: |
+    ## Q1 2026 Highlights
+    
+    ### Achievements
+    - ✅ 50+ PRs merged across ecosystem
+    - ✅ 15 new contributors joined
+    - ✅ Performance improved by 40%
+    
+    ### Q2 2026 Goals
+    - [ ] Launch new API v2
+    - [ ] Expand testing coverage to 90%
+    - [ ] Add multi-language support
+    
+    ### Community Stats
+    - Total Stars: 250+ ⭐
+    - Active Contributors: 25
+    - Open Issues: 12
+    
+    Thank you all for your continued support! 🌳
+  distribution_type: "milestone"
+  target_repositories: ""
+  create_issue: true
+  file_to_distribute: ""
+
+# Notes:
+# - All string fields support markdown formatting
+# - message_body supports multi-line content
+# - target_repositories accepts comma-separated list (no spaces after commas preferred)
+# - Empty target_repositories broadcasts to all configured repos
+# - distribution_type must be one of: announcement, milestone, documentation_update, security_alert
+# - create_issue should be true in most cases for tracking
+# - file_to_distribute should be relative path from repository root

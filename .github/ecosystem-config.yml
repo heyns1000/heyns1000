@@ -1,0 +1,94 @@
+# Ecosystem Repository Configuration
+# This file defines the repositories that are part of the heyns1000 ecosystem
+# and should receive broadcast messages
+
+ecosystem:
+  name: "heyns1000"
+  description: "Baobab Bush Portal Ecosystem"
+  hub_repository: "heyns1000/heyns1000"
+
+repositories:
+  - name: "codenest"
+    full_name: "heyns1000/codenest"
+    description: "Code nesting and organization platform"
+    priority: "high"
+    auto_sync: true
+    broadcast_enabled: true
+
+  - name: "omnigrid"
+    full_name: "heyns1000/omnigrid"
+    description: "Universal grid system and layout framework"
+    priority: "high"
+    auto_sync: true
+    broadcast_enabled: true
+
+  - name: "baobab-bush-portal"
+    full_name: "heyns1000/baobab-bush-portal"
+    description: "Main portal application"
+    priority: "critical"
+    auto_sync: true
+    broadcast_enabled: true
+
+  - name: "FruitfulPlanetChange"
+    full_name: "heyns1000/FruitfulPlanetChange"
+    description: "Environmental impact tracking platform"
+    priority: "high"
+    auto_sync: true
+    broadcast_enabled: true
+
+  - name: "pulse-trade-9s"
+    full_name: "heyns1000/pulse-trade-9s"
+    description: "Trading platform with pulse monitoring"
+    priority: "medium"
+    auto_sync: true
+    broadcast_enabled: true
+
+broadcast_settings:
+  default_labels:
+    - "broadcast"
+    - "ecosystem"
+  
+  priority_labels:
+    critical: "priority-critical"
+    high: "priority-high"
+    medium: "priority-medium"
+    low: "priority-low"
+  
+  type_labels:
+    announcement: "type-announcement"
+    milestone: "type-milestone"
+    documentation_update: "type-docs"
+    security_alert: "type-security"
+
+  auto_close_days: 7  # Auto-close broadcast issues after this many days
+  
+  fail_safe:
+    retry_attempts: 3
+    retry_delay_seconds: 60
+    continue_on_error: true
+    notify_on_failure: true
+
+distribution:
+  max_parallel: 3  # Maximum number of repositories to process in parallel
+  timeout_minutes: 10  # Timeout for each repository operation
+  
+  default_file_paths:
+    - "README.md"
+    - "CHANGELOG.md"
+    - "CONTRIBUTING.md"
+
+notifications:
+  enabled: true
+  channels:
+    - type: "github_issue"
+      enabled: true
+    - type: "github_discussion"
+      enabled: false
+    - type: "workflow_summary"
+      enabled: true
+
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-01-05"
+  maintainer: "@heyns1000"
+  schema_version: "1"
