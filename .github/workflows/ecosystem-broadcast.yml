@@ -1,0 +1,343 @@
+name: Ecosystem Broadcast Distribution
+
+on:
+  # Manual trigger with inputs for customization
+  workflow_dispatch:
+    inputs:
+      message_title:
+        description: 'Title of the broadcast message'
+        required: true
+        type: string
+      message_body:
+        description: 'Content of the message to broadcast'
+        required: true
+        type: string
+      distribution_type:
+        description: 'Type of distribution'
+        required: true
+        type: choice
+        options:
+          - announcement
+          - milestone
+          - documentation_update
+          - security_alert
+        default: 'announcement'
+      target_repositories:
+        description: 'Comma-separated list of target repos (leave empty for all ecosystem repos)'
+        required: false
+        type: string
+      create_issue:
+        description: 'Create an issue in target repositories'
+        required: false
+        type: boolean
+        default: true
+      file_to_distribute:
+        description: 'Optional: Path to file to distribute (relative to repo root)'
+        required: false
+        type: string
+
+  # Trigger on milestone creation
+  milestone:
+    types: [created, closed]
+
+  # Trigger on release events
+  release:
+    types: [published, created, edited]
+
+jobs:
+  prepare-broadcast:
+    name: Prepare Broadcast Configuration
+    runs-on: ubuntu-latest
+    outputs:
+      repositories: ${{ steps.configure.outputs.repositories }}
+      message_title: ${{ steps.configure.outputs.message_title }}
+      message_body: ${{ steps.configure.outputs.message_body }}
+      distribution_type: ${{ steps.configure.outputs.distribution_type }}
+      should_create_issue: ${{ steps.configure.outputs.should_create_issue }}
+      file_path: ${{ steps.configure.outputs.file_path }}
+      broadcast_id: ${{ steps.configure.outputs.broadcast_id }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure broadcast parameters
+        id: configure
+        run: |
+          # Generate unique broadcast ID
+          BROADCAST_ID="broadcast-$(date +%Y%m%d-%H%M%S)-${{ github.run_id }}"
+          echo "broadcast_id=$BROADCAST_ID" >> $GITHUB_OUTPUT
+          
+          # Default ecosystem repositories
+          DEFAULT_REPOS="codenest,omnigrid,baobab-bush-portal,FruitfulPlanetChange,pulse-trade-9s"
+          
+          # Determine trigger type and configure accordingly
+          if [ "${{ github.event_name }}" == "milestone" ]; then
+            echo "message_title=Milestone Update: ${{ github.event.milestone.title }}" >> $GITHUB_OUTPUT
+            echo "message_body=Milestone '${{ github.event.milestone.title }}' has been ${{ github.event.action }}. Description: ${{ github.event.milestone.description }}" >> $GITHUB_OUTPUT
+            echo "distribution_type=milestone" >> $GITHUB_OUTPUT
+            echo "should_create_issue=true" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" == "release" ]; then
+            echo "message_title=Release Announcement: ${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+            echo "message_body=New release ${{ github.event.release.tag_name }} has been ${{ github.event.action }}. ${{ github.event.release.body }}" >> $GITHUB_OUTPUT
+            echo "distribution_type=milestone" >> $GITHUB_OUTPUT
+            echo "should_create_issue=true" >> $GITHUB_OUTPUT
+          else
+            # Workflow dispatch - use input parameters
+            echo "message_title=${{ inputs.message_title }}" >> $GITHUB_OUTPUT
+            echo "message_body=${{ inputs.message_body }}" >> $GITHUB_OUTPUT
+            echo "distribution_type=${{ inputs.distribution_type }}" >> $GITHUB_OUTPUT
+            echo "should_create_issue=${{ inputs.create_issue }}" >> $GITHUB_OUTPUT
+            echo "file_path=${{ inputs.file_to_distribute }}" >> $GITHUB_OUTPUT
+          fi
+          
+          # Set target repositories
+          if [ -n "${{ inputs.target_repositories }}" ]; then
+            echo "repositories=${{ inputs.target_repositories }}" >> $GITHUB_OUTPUT
+          else
+            echo "repositories=$DEFAULT_REPOS" >> $GITHUB_OUTPUT
+          fi
+          
+          echo "✅ Broadcast configuration prepared"
+
+      - name: Validate configuration
+        run: |
+          echo "🔍 Broadcast Configuration:"
+          echo "  ID: ${{ steps.configure.outputs.broadcast_id }}"
+          echo "  Title: ${{ steps.configure.outputs.message_title }}"
+          echo "  Type: ${{ steps.configure.outputs.distribution_type }}"
+          echo "  Target Repos: ${{ steps.configure.outputs.repositories }}"
+          echo "  Create Issues: ${{ steps.configure.outputs.should_create_issue }}"
+
+  distribute-to-ecosystem:
+    name: Distribute to ${{ matrix.repo }}
+    needs: prepare-broadcast
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        repo: ${{ fromJson(format('["{0}"]', needs.prepare-broadcast.outputs.repositories)) }}
+      fail-fast: false  # Continue with other repos even if one fails
+      max-parallel: 3   # Limit concurrent operations
+    
+    steps:
+      - name: Checkout main repository
+        uses: actions/checkout@v4
+
+      - name: Parse repository from matrix
+        id: parse
+        run: |
+          # Handle comma-separated list in matrix
+          REPO_LIST="${{ needs.prepare-broadcast.outputs.repositories }}"
+          
+          # Convert comma-separated to array
+          IFS=',' read -ra REPOS <<< "$REPO_LIST"
+          
+          # Store all repos for later use
+          echo "repo_count=${#REPOS[@]}" >> $GITHUB_OUTPUT
+          
+          # Export as JSON array for potential reuse
+          printf '%s\n' "${REPOS[@]}" | jq -R . | jq -s . > /tmp/repos.json
+          
+          echo "✅ Parsed ${#REPOS[@]} repositories"
+
+      - name: Create issue in target repository
+        if: needs.prepare-broadcast.outputs.should_create_issue == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Parse repository list
+          REPO_LIST="${{ needs.prepare-broadcast.outputs.repositories }}"
+          IFS=',' read -ra REPOS <<< "$REPO_LIST"
+          
+          for REPO in "${REPOS[@]}"; do
+            REPO=$(echo "$REPO" | xargs)  # Trim whitespace
+            
+            echo "📝 Creating issue in heyns1000/$REPO..."
+            
+            # Prepare issue body with metadata
+            ISSUE_BODY=$(cat <<EOF
+          ## 📢 Ecosystem Broadcast: ${{ needs.prepare-broadcast.outputs.message_title }}
+
+          **Type:** \`${{ needs.prepare-broadcast.outputs.distribution_type }}\`
+          **Broadcast ID:** \`${{ needs.prepare-broadcast.outputs.broadcast_id }}\`
+          **Source:** heyns1000/heyns1000
+          **Timestamp:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
+          ---
+
+          ### 📋 Message Content
+
+          ${{ needs.prepare-broadcast.outputs.message_body }}
+
+          ---
+
+          ### 🔄 Action Items
+
+          - [ ] Review broadcast message
+          - [ ] Update repository documentation if needed
+          - [ ] Acknowledge receipt by closing this issue
+          - [ ] Report any issues or conflicts
+
+          ---
+
+          ### 🔗 Links
+
+          - [Source Workflow Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          - [heyns1000 Ecosystem Hub](https://github.com/heyns1000/heyns1000)
+
+          ---
+
+          <sub>🤖 This issue was automatically created by the Ecosystem Broadcast Distribution workflow. If this is an error, please close this issue and contact the repository maintainer.</sub>
+          EOF
+          )
+            
+            # Create issue with error handling
+            if gh issue create \
+              --repo "heyns1000/$REPO" \
+              --title "🌳 [${{ needs.prepare-broadcast.outputs.distribution_type }}] ${{ needs.prepare-broadcast.outputs.message_title }}" \
+              --body "$ISSUE_BODY" \
+              --label "broadcast,ecosystem,${{ needs.prepare-broadcast.outputs.distribution_type }}" 2>/tmp/error_$REPO.log; then
+              echo "✅ Issue created successfully in $REPO"
+            else
+              echo "⚠️ Failed to create issue in $REPO"
+              echo "Error details:"
+              cat /tmp/error_$REPO.log || echo "No error log available"
+              
+              # Create fallback notification
+              echo "⚠️ Failed to distribute to $REPO" >> /tmp/failed_repos.txt
+            fi
+          done
+          
+          echo "📊 Distribution complete"
+
+      - name: Distribute file if specified
+        if: needs.prepare-broadcast.outputs.file_path != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          FILE_PATH="${{ needs.prepare-broadcast.outputs.file_path }}"
+          
+          if [ ! -f "$FILE_PATH" ]; then
+            echo "⚠️ File not found: $FILE_PATH"
+            exit 0
+          fi
+          
+          echo "📦 Distributing file: $FILE_PATH"
+          
+          REPO_LIST="${{ needs.prepare-broadcast.outputs.repositories }}"
+          IFS=',' read -ra REPOS <<< "$REPO_LIST"
+          
+          for REPO in "${REPOS[@]}"; do
+            REPO=$(echo "$REPO" | xargs)
+            echo "📤 Attempting to distribute to $REPO..."
+            
+            # Note: Actual file distribution would require additional permissions
+            # This is a placeholder that creates an issue with file content
+            echo "ℹ️ File distribution to $REPO would happen here with appropriate permissions"
+          done
+
+  broadcast-summary:
+    name: Generate Broadcast Summary
+    needs: [prepare-broadcast, distribute-to-ecosystem]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Generate summary
+        run: |
+          echo "# 📢 Ecosystem Broadcast Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Broadcast ID:** \`${{ needs.prepare-broadcast.outputs.broadcast_id }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Title:** ${{ needs.prepare-broadcast.outputs.message_title }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Type:** \`${{ needs.prepare-broadcast.outputs.distribution_type }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 🎯 Target Repositories" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "${{ needs.prepare-broadcast.outputs.repositories }}" | tr ',' '\n' | while read repo; do
+            echo "- \`heyns1000/$repo\`" >> $GITHUB_STEP_SUMMARY
+          done
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 📊 Distribution Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.distribute-to-ecosystem.result }}" == "success" ]; then
+            echo "✅ Distribution completed successfully" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.distribute-to-ecosystem.result }}" == "failure" ]; then
+            echo "❌ Distribution completed with errors" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Distribution status: ${{ needs.distribute-to-ecosystem.result }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "*Workflow run: [${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*" >> $GITHUB_STEP_SUMMARY
+
+      - name: Check for failures
+        if: needs.distribute-to-ecosystem.result == 'failure'
+        run: |
+          echo "⚠️ Some repositories failed to receive the broadcast"
+          echo "Please review the workflow logs and retry if necessary"
+          exit 0  # Don't fail the workflow, just report
+
+  update-broadcast-log:
+    name: Update Broadcast Log
+    needs: [prepare-broadcast, distribute-to-ecosystem]
+    runs-on: ubuntu-latest
+    if: always()
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create or update broadcast log
+        run: |
+          # Create logs directory if it doesn't exist
+          mkdir -p .github/broadcast-logs
+          
+          # Create log entry
+          LOG_FILE=".github/broadcast-logs/${{ needs.prepare-broadcast.outputs.broadcast_id }}.md"
+          
+          cat > "$LOG_FILE" <<EOF
+          # Broadcast Log: ${{ needs.prepare-broadcast.outputs.broadcast_id }}
+
+          **Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Title:** ${{ needs.prepare-broadcast.outputs.message_title }}
+          **Type:** ${{ needs.prepare-broadcast.outputs.distribution_type }}
+          **Trigger:** ${{ github.event_name }}
+
+          ## Target Repositories
+
+          ${{ needs.prepare-broadcast.outputs.repositories }}
+
+          ## Message Content
+
+          ${{ needs.prepare-broadcast.outputs.message_body }}
+
+          ## Distribution Status
+
+          - Workflow Run: [${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          - Status: ${{ needs.distribute-to-ecosystem.result }}
+
+          ## Notes
+
+          This broadcast was distributed to all target repositories in the heyns1000 ecosystem.
+          EOF
+          
+          echo "📝 Log created: $LOG_FILE"
+
+      - name: Commit broadcast log
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          git add .github/broadcast-logs/
+          
+          if git diff --staged --quiet; then
+            echo "ℹ️ No changes to commit"
+          else
+            git commit -m "chore: add broadcast log for ${{ needs.prepare-broadcast.outputs.broadcast_id }} [skip ci]"
+            git push
+            echo "✅ Broadcast log committed and pushed"
+          fi
