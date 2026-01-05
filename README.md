@@ -354,4 +354,4 @@ This profile README is open source and available under the [MIT License](LICENSE
 - omnigrid: PR #35 immortality
 - pulse-trade-9s: Divergence zero
 
-[MERGE NOW → https://github.com/heyns1000/omnigrid/pull/35]()
+[MERGE NOW → https://github.com/heyns1000/omnigrid/pull/35](https://github.com/heyns1000/omnigrid/pull/35)
