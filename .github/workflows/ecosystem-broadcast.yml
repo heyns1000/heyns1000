@@ -50,6 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       repositories: ${{ steps.configure.outputs.repositories }}
+      repositories_json: ${{ steps.configure.outputs.repositories_json }}
       message_title: ${{ steps.configure.outputs.message_title }}
       message_body: ${{ steps.configure.outputs.message_body }}
       distribution_type: ${{ steps.configure.outputs.distribution_type }}
@@ -93,10 +94,16 @@ jobs:
           
           # Set target repositories
           if [ -n "${{ inputs.target_repositories }}" ]; then
-            echo "repositories=${{ inputs.target_repositories }}" >> $GITHUB_OUTPUT
+            REPOS="${{ inputs.target_repositories }}"
           else
-            echo "repositories=$DEFAULT_REPOS" >> $GITHUB_OUTPUT
+            REPOS="$DEFAULT_REPOS"
           fi
+          
+          echo "repositories=$REPOS" >> $GITHUB_OUTPUT
+          
+          # Convert comma-separated list to JSON array for matrix strategy
+          REPOS_JSON=$(echo "$REPOS" | jq -R -s -c 'split(",") | map(gsub("^\\s+|\\s+$"; ""))')
+          echo "repositories_json=$REPOS_JSON" >> $GITHUB_OUTPUT
           
           echo "✅ Broadcast configuration prepared"
 
@@ -107,6 +114,7 @@ jobs:
           echo "  Title: ${{ steps.configure.outputs.message_title }}"
           echo "  Type: ${{ steps.configure.outputs.distribution_type }}"
           echo "  Target Repos: ${{ steps.configure.outputs.repositories }}"
+          echo "  Target Repos JSON: ${{ steps.configure.outputs.repositories_json }}"
           echo "  Create Issues: ${{ steps.configure.outputs.should_create_issue }}"
 
   distribute-to-ecosystem:
@@ -115,7 +123,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        repo: ${{ fromJson(format('["{0}"]', needs.prepare-broadcast.outputs.repositories)) }}
+        repo: ${{ fromJson(needs.prepare-broadcast.outputs.repositories_json) }}
       fail-fast: false  # Continue with other repos even if one fails
       max-parallel: 3   # Limit concurrent operations
     
@@ -123,39 +131,19 @@ jobs:
       - name: Checkout main repository
         uses: actions/checkout@v4
 
-      - name: Parse repository from matrix
-        id: parse
-        run: |
-          # Handle comma-separated list in matrix
-          REPO_LIST="${{ needs.prepare-broadcast.outputs.repositories }}"
-          
-          # Convert comma-separated to array
-          IFS=',' read -ra REPOS <<< "$REPO_LIST"
-          
-          # Store all repos for later use
-          echo "repo_count=${#REPOS[@]}" >> $GITHUB_OUTPUT
-          
-          # Export as JSON array for potential reuse
-          printf '%s\n' "${REPOS[@]}" | jq -R . | jq -s . > /tmp/repos.json
-          
-          echo "✅ Parsed ${#REPOS[@]} repositories"
-
       - name: Create issue in target repository
         if: needs.prepare-broadcast.outputs.should_create_issue == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Parse repository list
-          REPO_LIST="${{ needs.prepare-broadcast.outputs.repositories }}"
-          IFS=',' read -ra REPOS <<< "$REPO_LIST"
+          # Get the repository name from matrix (already a single repo)
+          REPO="${{ matrix.repo }}"
+          REPO=$(echo "$REPO" | xargs)  # Trim whitespace
           
-          for REPO in "${REPOS[@]}"; do
-            REPO=$(echo "$REPO" | xargs)  # Trim whitespace
-            
-            echo "📝 Creating issue in heyns1000/$REPO..."
-            
-            # Prepare issue body with metadata
-            ISSUE_BODY=$(cat <<EOF
+          echo "📝 Creating issue in heyns1000/$REPO..."
+          
+          # Prepare issue body with metadata
+          ISSUE_BODY=$(cat <<EOF
           ## 📢 Ecosystem Broadcast: ${{ needs.prepare-broadcast.outputs.message_title }}
 
           **Type:** \`${{ needs.prepare-broadcast.outputs.distribution_type }}\`
@@ -190,25 +178,24 @@ jobs:
           <sub>🤖 This issue was automatically created by the Ecosystem Broadcast Distribution workflow. If this is an error, please close this issue and contact the repository maintainer.</sub>
           EOF
           )
-            
-            # Create issue with error handling
-            if gh issue create \
-              --repo "heyns1000/$REPO" \
-              --title "🌳 [${{ needs.prepare-broadcast.outputs.distribution_type }}] ${{ needs.prepare-broadcast.outputs.message_title }}" \
-              --body "$ISSUE_BODY" \
-              --label "broadcast,ecosystem,${{ needs.prepare-broadcast.outputs.distribution_type }}" 2>/tmp/error_$REPO.log; then
-              echo "✅ Issue created successfully in $REPO"
-            else
-              echo "⚠️ Failed to create issue in $REPO"
-              echo "Error details:"
-              cat /tmp/error_$REPO.log || echo "No error log available"
-              
-              # Create fallback notification
-              echo "⚠️ Failed to distribute to $REPO" >> /tmp/failed_repos.txt
-            fi
-          done
           
-          echo "📊 Distribution complete"
+          # Create issue with error handling
+          if gh issue create \
+            --repo "heyns1000/$REPO" \
+            --title "🌳 [${{ needs.prepare-broadcast.outputs.distribution_type }}] ${{ needs.prepare-broadcast.outputs.message_title }}" \
+            --body "$ISSUE_BODY" \
+            --label "broadcast,ecosystem,${{ needs.prepare-broadcast.outputs.distribution_type }}" 2>/tmp/error_$REPO.log; then
+            echo "✅ Issue created successfully in $REPO"
+          else
+            echo "⚠️ Failed to create issue in $REPO"
+            echo "Error details:"
+            cat /tmp/error_$REPO.log || echo "No error log available"
+            
+            # Exit with error to mark this matrix job as failed
+            exit 1
+          fi
+          
+          echo "📊 Distribution complete for $REPO"
 
       - name: Distribute file if specified
         if: needs.prepare-broadcast.outputs.file_path != ''
@@ -224,17 +211,15 @@ jobs:
           
           echo "📦 Distributing file: $FILE_PATH"
           
-          REPO_LIST="${{ needs.prepare-broadcast.outputs.repositories }}"
-          IFS=',' read -ra REPOS <<< "$REPO_LIST"
+          # Get the repository name from matrix
+          REPO="${{ matrix.repo }}"
+          REPO=$(echo "$REPO" | xargs)
           
-          for REPO in "${REPOS[@]}"; do
-            REPO=$(echo "$REPO" | xargs)
-            echo "📤 Attempting to distribute to $REPO..."
-            
-            # Note: Actual file distribution would require additional permissions
-            # This is a placeholder that creates an issue with file content
-            echo "ℹ️ File distribution to $REPO would happen here with appropriate permissions"
-          done
+          echo "📤 Attempting to distribute to $REPO..."
+          
+          # Note: Actual file distribution would require additional permissions
+          # This is a placeholder that creates an issue with file content
+          echo "ℹ️ File distribution to $REPO would happen here with appropriate permissions"
 
   broadcast-summary:
     name: Generate Broadcast Summary
