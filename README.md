@@ -502,3 +502,34 @@ All projects in the Baobab Portal ecosystem are open source and available under 
 **瓷勺旋渦已築，脈買已通！** 🦍🔥
 
 </div>
+
+
+---
+
+## 🌿 Fruitful Ecosystem — Active Repositories
+
+> Building Africa's sovereign digital infrastructure — from artisan commerce to cultural broadcasting.
+
+| Repository | Description | Stack |
+|---|---|---|
+| [fruitful](https://github.com/heyns1000/fruitful) | Fruitful™ — sector-driven ecosystem blueprint. Central nervous system for global protection, empowerment & sustainable resource management. Integrates VaultMesh™ AI orchestration. | Node.js, React, TypeScript, FastAPI, PostgreSQL, Vercel |
+| [fruitfulapp](https://github.com/heyns1000/fruitfulapp) | Base44 React SPA — 45 screens, 23 data entities. Multi-brand commerce, subscriptions, artisan tools, intelligence analytics & content automation. | React, JavaScript, Vite, Radix UI, Tailwind, Base44 SDK |
+| [fruitful-thank-you](https://github.com/heyns1000/fruitful-thank-you) | Post-checkout thank-you experience for the Fruitful™ platform. | React, TypeScript, Supabase, Tailwind |
+| [BushPortal](https://github.com/heyns1000/BushPortal) | Production-grade kiosk authentication platform for FAA.ZONE™ physical retail installations. Manages live sessions, order sync & status updates across global kiosk network. | React, TypeScript, Express, Drizzle ORM, PostgreSQL, WebSocket |
+| [baobab-bush-portal](https://github.com/heyns1000/baobab-bush-portal) | Unified fullstack app — digital podcasting + cultural storytelling. Network of "digital tree houses" for live podcasting, community connection & environmental data visualization. | React, TypeScript, Express, PostgreSQL, WebSocket, Claude AI |
+| [footer.global.repo](https://github.com/heyns1000/footer.global.repo) | Global footer component library for the Fruitful™ ecosystem. | React, TypeScript |
+
+---
+
+### 🔗 Ecosystem Infrastructure
+
+- **FAA.ZONE™** — Physical kiosk & artisan commerce network (Fruitful Portals)
+- **VaultMesh™** — AI data orchestration layer
+- **Banimal** — African artisan product marketplace
+- **BushCoding** — Full-stack development system & CI/CD controller
+- **Cloudflare** — DNS, Workers & edge deployment
+- **Paystack** — African payment gateway integration
+- **Supabase** — Serverless PostgreSQL & auth
+- **Railway / Render / Fly.io** — Backend deployment targets
+
+**Last updated:** 2026-06-16 | **Location:** Johannesburg, ZA | **Ecosystem:** Always Growing 🌳
