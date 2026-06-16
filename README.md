@@ -533,3 +533,40 @@ All projects in the Baobab Portal ecosystem are open source and available under 
 - **Railway / Render / Fly.io** — Backend deployment targets
 
 **Last updated:** 2026-06-16 | **Location:** Johannesburg, ZA | **Ecosystem:** Always Growing 🌳
+
+---
+
+## Madiba Between the Baobabs
+
+```
+       🌳                    🌳
+      /|\                  /|\
+     / | \                / | \
+    /  |  \              /  |  \
+---/---|---\------------/---|---\---
+   |   |   |            |   |   |
+
+              🌍 MADIBA 🌍
+         "It always seems impossible
+          until it is done."
+
+    Nelson Mandela — The Baobab stands
+    between two trees, as wisdom stands
+    between past and future.
+```
+
+> *The Madiba spirit lives in the roots of the Baobab — ancient, resilient, and community-sustaining.*
+> *Between two baobabs stands the philosophy of Fruitful(TM): Ubuntu, Growth, and Transformation.*
+
+**Fruitful(TM) Core Identity**: Building Africa's sovereign digital infrastructure — rooted in the wisdom of the Baobab, inspired by the spirit of Madiba.
+
+---
+
+## Fruitful(TM) Core Banner
+
+**Fruitful(TM) : Igniting Global Transformation**
+*Catalyzing a Sector-Driven Ecosystem of Change.*
+
+> This profile and all 102 repositories in the heyns1000 ecosystem operate under the **Fruitful(TM) Core License** — Proprietary | Fruitful Holdings (Pty) Ltd | All Rights Reserved.
+
+*Built by **Heyns Schoeman** | CodeNest | Pretoria, South Africa | "A trunk made of data - The Baobab Security Network"*
