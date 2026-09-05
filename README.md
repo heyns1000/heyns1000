@@ -317,6 +317,28 @@ const VaultMeshPulse = {
 
 ---
 
+## 🌳 The Trunk
+
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/heyns1000/banimal/main/docs/brand/assets/samfox-icon-verified-ink.png" width="36" alt="Sam Fox verified mark" />
+
+</div>
+
+> A claim is only as strong as the command you'd run to check it. Every merge, every fix, every audit in this ecosystem has that command sitting behind it — `git log --merges`, a live `curl` against a running Worker, a byte-diff between two repos' copies of the same file. Where that command couldn't be run, it says so instead of rounding up.
+>
+> That's the whole trunk. Not a philosophy borrowed from an ancient tree — a habit, repeated enough across sessions that it started to look like one.
+
+<div align="center">
+
+| | |
+|:---|:---|
+| 🔗 **Current version, permanent link** | [claude.ai/code/artifact/29097590…](https://claude.ai/code/artifact/29097590-39b6-4ee5-93e4-15e26e129cad) |
+
+</div>
+
+---
+
 ## 🤝 Connect & Collaborate
 
 <div align="center">
