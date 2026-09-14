@@ -19,40 +19,6 @@
 
 ### 🔥 The Two Merges That Built the Empire
 
-**MERGE 1**: [omnigrid PR#35](https://github.com/heyns1000/omnigrid/pull/35) - FAA v4.4 Framework  
-```
-10 files | +2,847 lines → DEPLOYED TO 95 REPOS
-├── pulse-trade-9s.yml → 9s auto-sync ALL branches
-├── ecosystem-sync-monitor.yml → Scans 95 repos (15min)
-├── mr-actuary-conflict-resolver.py → Fixes 300+ behind commits
-└── config/ecosystem-repos.json → Your 95 repo list
-Status: ✅ MERGED → codenest controller live
-```
-
-**MERGE 2**: [heyns1000/heyns1000 PR#6](https://github.com/heyns1000/heyns1000/pull/6) - Baobab + Workflow Fix  
-```
-SHA: f97f74cd353f973ea7283b8177a7cb794ecd71bf
-Fix: --auto-commit true → --auto-commit (stops failing badges)
-Restore: Full Baobab Portal (trees/SVG/stats/services)
-Status: ✅ MERGED → Profile + workflows fixed
-```
-
-**Result**: 95 repos scanning (09:45 run → 10:26 🟢). No behind branches post-pulse.  
-**Proof**: [Live Actions](https://github.com/heyns1000/codenest/actions) | Empire pulsing 🌳🦊⚡
-
----
-
-## 🦊 Foxed Has Mobiles Integration
-
-<div align="center">
-
-[![Mobile Ready](https://img.shields.io/badge/Mobile-Ready-2E8B57?style=for-the-badge&logo=mobile)](https://github.com/heyns1000)
-[![Responsive](https://img.shields.io/badge/Responsive-Design-2E8B57?style=for-the-badge&logo=responsive)](https://github.com/heyns1000)
-[![PWA Ready](https://img.shields.io/badge/PWA-Ready-2E8B57?style=for-the-badge&logo=pwa)](https://github.com/heyns1000)
-
-</div>
-
----
 
 ## 🌳 ASCII Art Ecosystem
 
