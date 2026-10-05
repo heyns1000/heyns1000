@@ -1,40 +1,45 @@
 <div align="center">
 
-# 🌳 Welcome to the Baobab Bush Portal 🌳
+<img src="brand/fruitful-lockup-verified.png" alt="Fruitful™" height="64">
 
-<img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=32&duration=2800&pause=2000&color=2E8B57&center=true&vCenter=true&width=940&lines=Welcome+to+the+Baobab+Bush+Portal+%F0%9F%8C%B3;Where+Code+Grows+Like+Ancient+Trees+%F0%9F%8C%BF;Building+Resilient+Digital+Ecosystems+%F0%9F%A6%8E;Always+Growing%2C+Always+Evolving+%F0%9F%8C%B1" alt="Typing SVG" />
+*If you don't like the fruits you are growing, change the seed™*
 
-<img src="https://komarev.com/ghpvc/?username=heyns1000&label=Portal+Visitors&color=2E8B57&style=for-the-badge" alt="Portal Visitors" />
+Building Africa's sovereign digital infrastructure from Pretoria:<br>
+every portal, sector, terminal and brand in one OmniGrid™.
+
+`Launch readiness 77/77` · `30 sectors` · `225 pages` · `80 public repos`
 
 </div>
 
+## 🌍 The ecosystem
 
+| Part | What it is | Where |
+|---|---|---|
+| **Fruitful™** | The Global Ecosystem launch site and OmniGrid™ | [fruitful](https://github.com/heyns1000/fruitful) |
+| **FAA.ZONE™** | Baobab Security Network™ terminal | [baobab](https://github.com/heyns1000/baobab) |
+| **Seedwave™** | One site per sector: wildlife, trade, justice, nutrition and more | `*.seedwave.faa.zone` |
+| **Fruitful API Platform** | The shared API behind the portals | [fruitful-api-platform](https://github.com/heyns1000/fruitful-api-platform) |
+| **Banimal™ · Sam Fox™** | Brand source of truth (Banimal Connector) | private |
 
+## 📈 This year
 
-## Madiba Between the Baobabs
+| 3,438 | 80 | 30 | 161 |
+|:---:|:---:|:---:|:---:|
+| contributions | public repos | sectors live in the grid | applications |
 
-```
-       🌳                    🌳
-      /|\                  /|\
-     / | \                / | \
-    /  |  \              /  |  \
----/---|---\------------/---|---\---
-   |   |   |            |   |   |
+## 🚧 Building now
 
-              🌍 MADIBA 🌍
-         "It always seems impossible
-          until it is done."
+- **Ecosystem launch**: the Global Ecosystem page, 77 of 77 routes ready
+- **The Shock Launch**: the welcome page in English, 中文 and Español
+- **Banimal Connector**: one verified set of brand marks pulled into every site
 
-    Nelson Mandela — The Baobab stands
-    between two trees, as wisdom stands
-    between past and future.
-```
+> "It always seems impossible until it is done." Nelson Mandela
+>
+> Between two baobabs stands the philosophy of Fruitful™: Ubuntu, growth and transformation.
 
-> *The Madiba spirit lives in the roots of the Baobab — ancient, resilient, and community-sustaining.*
-> *Between two baobabs stands the philosophy of Fruitful(TM): Ubuntu, Growth, and Transformation.*
+<p align="right">
+<sub>Fruitful Holdings (Pty) Ltd · Pretoria, South Africa · Brand marks via the Banimal Connector</sub>&nbsp;
+<img src="brand/samfox-icon-verified-cream.png" alt="Sam Fox™" height="44">
+</p>
 
-**Fruitful(TM) Core Identity**: Building Africa's sovereign digital infrastructure — rooted in the wisdom of the Baobab, inspired by the spirit of Madiba.
-
----
-
-
+<sub>Earlier versions of this profile: [ARCHIVE-20261005.md](ARCHIVE-20261005.md) · [ARCHIVE-20260106.md](ARCHIVE-20260106.md)</sub>
