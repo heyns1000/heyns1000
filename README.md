@@ -11,6 +11,13 @@ every portal, sector, terminal and brand in one OmniGrid™.
 
 </div>
 
+## 🎂 Happy 39th, Sam
+
+Today Samantha Ford Schoeman, the hand behind every Sam Fox™ creature, turns 39.
+Her birthday page shows 34 of her pieces: the originals, the Banimal™ prints, the nursery walls and the patterns.
+
+[Open Sam's birthday page](https://fruitful.faa.zone/celebrate/sam-39/) · [See it in the repo](https://github.com/heyns1000/fruitful/tree/main/celebrate/sam-39)
+
 ## 🌍 The ecosystem
 
 | Part | What it is | Where |
